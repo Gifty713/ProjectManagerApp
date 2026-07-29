@@ -11,7 +11,7 @@ const startServer=async()=>{
             console.log("Error occurred: ", error);
             throw error;
         });       
-        app.listen(process.env.PORT || 4000, ()=>{
+        app.listen(process.env.PORT || 8000, ()=>{
             console.log(`Connection successful on port ${process.env.PORT}`)
         });
  
