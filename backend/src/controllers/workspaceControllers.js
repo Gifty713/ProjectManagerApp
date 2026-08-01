@@ -55,6 +55,7 @@ const getWorkspaces = async(req, res)=>{
         res.status(500).json({message:"Internal server error, error in getting workspaces.", error:error.message});        
     }
 }
+
 const particularWorkspace=async(req,res)=>{
     try {
         const workspace_id = req.params.id;
@@ -72,4 +73,28 @@ const particularWorkspace=async(req,res)=>{
     }
 }
 
-export {createWorkspace, getWorkspaces, particularWorkspace};
+const deleteWorkspace = async(req,res)=>{
+    try {
+        const workspace_id = req.params.id;
+        // validate if this workspace is available
+        const foundWorkspace = await pool.query(`
+            SELECT EXISTS(
+                SELECT 1
+                FROM workspaces
+                WHERE workspace_id = $1              
+            )  
+        `,[workspace_id]);     
+
+        if(!foundWorkspace) return(res.status(404).json({message:"Can't find this workspace, enter valid workspace id."})); 
+        // delete workspace
+        const result = await pool.query(`
+            DELETE FROM workspaces
+            WHERE workspace_id = $1
+            RETURNING workspace_name
+        `, [workspace_id]);
+        res.status(203).json({message:"Workspace successfully deleted", result:result.rows[0]});
+    } catch (error) {
+        res.status(500).json({message:"Internal server error, error in deleting workspace.", error:error.message});               
+    }
+}
+export {createWorkspace, getWorkspaces, particularWorkspace, deleteWorkspace};
