@@ -1,10 +1,10 @@
-import {nanoid} from "nanoid";
 import pool from "../config/database.js";
 const createProject = async(req,res)=>{
     try {
         // defining variables
         const {project_name} = req.body;
         const workspace_id = req.params.id;
+        const user_id = req.user;
 
         // validating project_name
         if(!project_name) return res.status(400).json({message:"You need to add a workspace name"});
@@ -25,34 +25,19 @@ const createProject = async(req,res)=>{
             project_named = project_named + String(num);
         };
 
-        // for project code:
-        let project_code = nanoid(10);
-        // check if unique 
-        let foundCode = await pool.query(`
-            SELECT EXISTS(
-                SELECT 1
-                FROM projects
-                WHERE project_code = $1              
-            )  
-        `,[project_code]);
-        // if not unique keep on creating till unique
-        while (foundCode.rows[0].exists){
-            project_code = nanoid(10);
 
-            foundCode = await pool.query(`
-                SELECT EXISTS(
-                    SELECT 1
-                    FROM projects
-                    WHERE project_code = $1              
-                )  
-            `,[project_code]);            
-        };
         // create project
         const result = await pool.query(`
-            INSERT INTO projects(project_name, workspace_parent, project_code)
-            VALUES($1, $2, $3)
+            INSERT INTO projects(project_name, workspace_parent)
+            VALUES($1, $2)
             RETURNING  *
-        `, [project_named, workspace_id, project_code]);
+        `, [project_named, workspace_id]);
+
+        // create a first members id with role Admin
+        await pool.query(`
+            INSERT INTO members(user_id, project_id, role)
+            VALUES ($1, $2, $3)
+        `, [user_id, result.rows[0].project_id, "Admin"]);
         
         res.status(200).json({message:"Project successfully created.", result: result.rows[0]});
     } catch (error) {
@@ -64,7 +49,7 @@ const getProjects = async(req, res)=>{
     try {
         // workspace id
         const workspace_id = req.params.id;
-        // get all workspaces with that created by id
+        // get all projects with same workspace parent 
         const result = await pool.query(`
             SELECT * 
             FROM projects 
@@ -75,6 +60,26 @@ const getProjects = async(req, res)=>{
         res.status(200).json({message:"Projects gotten: ", data});
     } catch (error) {
         res.status(500).json({message:"Internal server error, error in getting projects.", error:error.message});        
+    }
+}
+
+const getParticularProject = async(req, res)=>{
+    try {
+        // project id
+        const project_id = req.params.id;
+
+        // get project with same project id
+        const result = await pool.query(`
+            SELECT * 
+            FROM projects 
+            WHERE project_id = $1
+        `, [project_id]);
+        // validate result
+        if (result.rows[0].length === 0) res.status(404).json({message:"This project was not found."});
+        // return result
+        res.status(200).json({message:"Project found: ", result:result.rows[0]});
+    } catch (error) {
+        res.status(500).json({message:"Internal server error, error in getting particular project.", error:error.message});                
     }
 }
 
@@ -103,4 +108,4 @@ const deleteProject = async(req,res)=>{
     }
 }
 
-export {createProject, getProjects, deleteProject};
+export {createProject, getProjects,getParticularProject ,deleteProject};
