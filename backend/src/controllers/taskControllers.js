@@ -18,10 +18,17 @@ const createTask = async(req,res)=>{
         if(!foundProject) return(res.status(404).json({message:"Can't find this project, enter valid project id."})); 
 
         // validating due date
-        // fix this
         const today = new Date();
-        if (due_date < today) return res.status(400).json({message:"Due date should not be a date before today."});
+        today.setHours(0, 0, 0, 0);
 
+        const dueDate = new Date(due_date);
+        dueDate.setHours(0, 0, 0, 0);
+
+        if (dueDate < today) {
+            return res.status(400).json({
+                message: "Due date should not be before today."
+            });
+        }
         // validating task_name
         if(!task_name) return res.status(400).json({message:"You need to add a task name"});
         let task_named = task_name;
@@ -60,7 +67,7 @@ const createTask = async(req,res)=>{
 const editTask = async(req, res)=>{
     try {
         // defining variables
-        const {task_name, due_date, asssigned_to} = req.body;
+        const {task_name, due_date, assigned_to} = req.body;
         const task_id = req.params.task_id;
         const user_id = req.user;
 
@@ -68,7 +75,7 @@ const editTask = async(req, res)=>{
         const foundTask = await pool.query(`
             SELECT EXISTS(
                 SELECT 1
-                FROM task
+                FROM tasks
                 WHERE task_id = $1              
             )  
         `,[task_id]);     
@@ -76,14 +83,23 @@ const editTask = async(req, res)=>{
         if(!foundTask) return(res.status(404).json({message:"Can't find this task, enter valid project id."})); 
         // validating due date
         const today = new Date();
-        if (due_date < today) return res.status(400).json({message:"Due date should not be a date before today."});
+        today.setHours(0, 0, 0, 0);
+
+        const dueDate = new Date(due_date);
+        dueDate.setHours(0, 0, 0, 0);
+
+        if (dueDate < today) {
+            return res.status(400).json({
+                message: "Due date should not be before today."
+            });
+        }
 
         // validating task_name
         if(!task_name) return res.status(400).json({message:"You need to add a task name"});
         let task_named = task_name;
         
         // validating assigned to
-        if (!asssigned_to) return res.status(400).json({message:"You need to assign this task to someone or somepeople."});
+        if (!assigned_to) return res.status(400).json({message:"You need to assign this task to someone or somepeople."});
         
         // check to see if there's a task with that name
         const resultCount = await pool.query(`
@@ -101,11 +117,11 @@ const editTask = async(req, res)=>{
         };
         // edit task
         const result = await pool.query(`
-            UPDATE TABLE tasks
+            UPDATE tasks
             SET task_name = $1, due_date = $2, assigned_to = $3, updated_at = $4
             WHERE task_id = $5
             RETURNING  *
-        `, [task_named, due_date, asssigned_to, today ,task_id]);
+        `, [task_named, due_date, assigned_to, today ,task_id]);
         
         res.status(200).json({message:"Task successfully created.", result: result.rows[0]});
     } catch (error) {
@@ -148,14 +164,18 @@ const changeStatus = async(req, res)=>{
         if (!validStatus.includes(status)) return res.status(400).json({message:"This task status is not a valid status."});
         // check if this user is permitted to change the status to this level
         // find this user in member id and check role
-        const resultMember = pool.query(`
-          SELECT 1
-          FROM members
-          WHERE user_id = $1 AND project_id = $2
+        const resultMember = await pool.query(`
+            SELECT *
+            FROM members
+            WHERE user_id = $1 AND project_id = $2         
         `,[user_id, project_id]);
-        const role = resultMember.rows[0]
-        console.log(role);
-
+        const result = resultMember.rows;
+        const role = result[0].role;
+        // Any assigned member (team member, team manager, project manager or admin) 
+        // can change a status from to do->in progress->done, but only team managers, project manager or admin can change a project from done -> approved 
+        if (role === "Team Member" && status === "Approved") res.status(401).json({message:"You are not authorized to change the status to approved."});
+        
+        res.status(200).json({messag:"Status successfully to: ", status});
     } catch (error) {
         res.status(500).json({message:"Internal server error, error in changing task status.", error:error.message});                       
     }
@@ -168,14 +188,13 @@ const getTasks = async(req, res)=>{
         const status = req.params.status;
 
         // validate status
-        const validStatus = ["In progress", "Done", "Approved"];
+        const validStatus = ["to do","In progress", "Done", "Approved"];
         if (!validStatus.includes(status)) return res.status(400).json({message:"This task status is not a valid status."});
 
-        const result = pool.query(`
+        const result = await pool.query(`
            SELECT * 
            FROM tasks 
-           WHERE project_parent = $1 AND status = $2
-           RETURNING task_name
+           WHERE project_parent = $1 AND task_status = $2
         `,[project_id, status]);
         
         if (result.rows.length == 0) return res.status(200).json({message:"There's no task with that status at the moment."});
