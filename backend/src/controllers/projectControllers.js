@@ -95,7 +95,7 @@ const deleteProject = async(req,res)=>{
             )  
         `,[project_id]);     
 
-        if(!foundProject) return(res.status(404).json({message:"Can't find this project, enter valid project id."})); 
+        if(!foundProject.rows.exists) return(res.status(404).json({message:"Can't find this project, enter valid project id."})); 
         // delete project
         const result = await pool.query(`
             DELETE FROM projects

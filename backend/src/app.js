@@ -1,18 +1,37 @@
 import express from "express";
+import { Server } from "socket.io";
+import {createServer} from "http";
+import cors from "cors";
 import authRoute from "./routes/AuthRoutes.js";
 import workspaceRoute from "./routes/workspaceRoutes.js";
 import projectRoute from "./routes/projectRoutes.js";
 import memberRoute from "./routes/memberRoutes.js";
 import taskRoute from "./routes/taskRoutes.js";
+import commentRoute from "./routes/commentRoutes.js";
 
 const app = express();
-
 app.use(express.json());
+app.use(cors());
+const httpServer = createServer(app);
+const io = new Server(httpServer, {cors:{origin:"*"}});
+
+app.use((req, res, next)=>{
+    req.io = io;
+    next();
+})
+
+io.on("connection", (socket)=>{
+    // connect the user to the project_room chat
+    socket.on("join_room", (project_id)=>{
+        socket.join(`roomId:${project_id}`)
+    });
+});
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/workspace", workspaceRoute);
 app.use("/api/v1/project", projectRoute);
 app.use("/api/v1/members", memberRoute);
 app.use("/api/v1/tasks", taskRoute);
+app.use("/api/v1/comments", commentRoute);
 
 export default app;
