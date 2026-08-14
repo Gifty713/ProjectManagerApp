@@ -1,0 +1,43 @@
+.app-shell {
+  min-height: 100vh;
+}
+.app-main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+}
+.app-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px 48px;
+}
+
+/* Shared page section helpers */
+.section {
+  margin-top: 26px;
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.section-head h2 {
+  font-size: 18px;
+  font-weight: 700;
+}
+.section-head .muted {
+  font-size: 13.5px;
+}
+
+@media (max-width: 900px) {
+  .app-main {
+    margin-left: 0;
+  }
+}
+@media (max-width: 620px) {
+  .app-container {
+    padding: 0 16px 40px;
+  }
+}

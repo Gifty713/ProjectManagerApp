@@ -1,0 +1,122 @@
+.dash-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.dash-heading h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+.dash-heading p {
+  font-size: 13.5px;
+  margin-top: 2px;
+}
+
+/* Stat cards */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.stat-card {
+  padding: 18px;
+}
+.stat-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.stat-ic {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stat-strip {
+  width: 28px;
+  height: 5px;
+  border-radius: 999px;
+  opacity: 0.85;
+}
+.stat-value {
+  font-family: var(--font-head);
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink);
+}
+.stat-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.stat-hint {
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+
+/* Two-column dashboard layout */
+.dash-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 22px;
+  align-items: start;
+}
+.dash-board {
+  min-width: 0;
+}
+
+.deadline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.deadline-card {
+  padding: 16px;
+}
+.deadline-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.deadline-name {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 15px;
+}
+.deadline-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 12px;
+}
+
+@media (max-width: 1180px) {
+  .dash-columns {
+    grid-template-columns: 1fr;
+  }
+  .dash-deadlines .deadline-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 440px) {
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
