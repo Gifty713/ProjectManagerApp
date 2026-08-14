@@ -104,9 +104,6 @@
   transition: background 0.16s ease;
   text-align: left;
 }
-.user-chip:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
 .user-meta {
   display: flex;
   flex-direction: column;

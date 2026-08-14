@@ -6,8 +6,13 @@
   margin-bottom: 20px;
   flex-wrap: wrap;
 }
+.dash-heading2 {
+  display: block;
+  width: fit-content;
+  margin: 0px 0 20px auto;
+}
 .dash-heading h2 {
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 700;
 }
 .dash-heading p {
@@ -63,35 +68,13 @@
 
 /* Two-column dashboard layout */
 .dash-columns {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 22px;
-  align-items: start;
+  display: block;
+
 }
 .dash-board {
   min-width: 0;
 }
 
-.deadline-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.deadline-card {
-  padding: 16px;
-}
-.deadline-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.deadline-name {
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: 15px;
-}
 .deadline-meta {
   display: inline-flex;
   align-items: center;
@@ -99,6 +82,14 @@
   font-size: 13px;
   font-weight: 500;
   margin-top: 12px;
+}
+
+.task-card button{
+  width: 32px;
+  height:32px;
+  padding: 0;
+  border-radius: 100%;
+  font-size: 0.6rem;
 }
 
 @media (max-width: 1180px) {

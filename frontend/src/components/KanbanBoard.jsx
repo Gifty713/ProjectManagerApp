@@ -16,13 +16,10 @@ export default function KanbanBoard({ data = defaultKanban, columns = defaultCol
                 {col.label}
                 <span className="kanban-count">{tasks.length}</span>
               </div>
-              <button className="kanban-add" aria-label={`Add task to ${col.label}`}>
-                <Plus size={16} />
-              </button>
             </header>
             <div className="kanban-col-body">
               {tasks.map((t) => (
-                <TaskCard key={t.id} task={t} />
+                <TaskCard key={t.id} task={t} category={col.label} />
               ))}
               {tasks.length === 0 && <div className="kanban-empty">No tasks</div>}
             </div>

@@ -1,15 +1,41 @@
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { Mail, Lock, Eye, EyeOff, Layers, ShieldCheck, Zap } from "lucide-react"
+import { useAuth } from "../auth/AuthContext.jsx"
 import "../styles/auth.css"
 
 export default function Login() {
   const [showPw, setShowPw] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
+  const { signIn } = useAuth()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    navigate("/dashboard")
+    setError("")
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch(`http://localhost:4000/api/v1/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+      const data = await response.json()
+
+      if (!response.ok) throw new Error(data.message || "Unable to sign in. Please try again.")
+
+      signIn(data.accessToken)
+      navigate(location.state?.from?.pathname || "/dashboard", { replace: true })
+    } catch (err) {
+      setError(err.message || "Unable to connect to the server. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -57,11 +83,12 @@ export default function Login() {
           </div>
 
           <form className="auth-fields" onSubmit={handleSubmit}>
+            {location.state?.message && <p className="auth-success" role="status">{location.state.message}</p>}
             <div className="field">
               <label htmlFor="email">Email address</label>
               <div className="input-wrap">
                 <span className="lead-icon"><Mail size={17} /></span>
-                <input id="email" className="input has-lead" type="email" placeholder="you@company.com" required />
+                <input id="email" className="input has-lead" type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
             </div>
 
@@ -74,6 +101,8 @@ export default function Login() {
                   className="input has-lead has-trail"
                   type={showPw ? "text" : "password"}
                   placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
                 <button
@@ -96,7 +125,10 @@ export default function Login() {
               </a>
             </div>
 
-            <button type="submit" className="btn btn-primary btn-block">Sign in</button>
+            {error && <p className="auth-error" role="alert">{error}</p>}
+            <button type="submit" className="btn btn-primary btn-block" disabled={isSubmitting}>
+              {isSubmitting ? "Signing in..." : "Sign in"}
+            </button>
           </form>
 
           <p className="auth-foot">

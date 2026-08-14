@@ -15,8 +15,9 @@ import "../styles/sidebar.css"
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/projects", label: "Projects", icon: FolderKanban },
-  { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/workspaces", label: "Workspaces", icon: Boxes },
+  { to: "/calendar", label: "Calendar", icon: CalendarDays },
+  { to: "/calendar", label: "Assigned tasks", icon: CalendarDays },
 ]
 
 export default function Sidebar({ open, onClose }) {
@@ -50,13 +51,13 @@ export default function Sidebar({ open, onClose }) {
         </nav>
 
         <div className="sidebar-foot">
-          <button className="user-chip" type="button">
+          <div className="user-chip">
             <Avatar name={currentUser.name} size="md" />
             <span className="user-meta">
               <span className="user-name">{currentUser.name}</span>
               <span className="user-role">{currentUser.role}</span>
             </span>
-          </button>
+          </div>
         </div>
       </aside>
     </>

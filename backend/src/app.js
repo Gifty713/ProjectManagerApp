@@ -9,10 +9,17 @@ import projectRoute from "./routes/projectRoutes.js";
 import memberRoute from "./routes/memberRoutes.js";
 import taskRoute from "./routes/taskRoutes.js";
 import commentRoute from "./routes/commentRoutes.js";
+import dotenv from "dotenv";
+
+dotenv.config({
+    path:"./.env"
+})
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors(
+    {origin:"http://localhost:5173"}
+));
 const httpServer = createServer(app);
 const io = new Server(httpServer, {cors:{origin:"*"}});
 

@@ -18,52 +18,38 @@ export default function Dashboard() {
 
   return (
     <>
-      <Topbar title="Dashboard" subtitle="Welcome back, Amelia" onMenu={onMenu} />
+      <Topbar subtitle="This is workspace this" onMenu={onMenu} />
 
       <div className="dash-heading">
         <div>
-          <h2>Workspace overview</h2>
-          <p className="muted">Track your team&apos;s progress across active projects.</p>
+          <h2>Project</h2>
         </div>
+        
         <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
-          <Plus size={17} /> Add Workspace
+          Switch Project
+        </button>
+      </div>
+      <ProgressBar value="40" label="Project Deadline" />
+      <div className="deadline-meta muted">
+        <Clock size={14} /> 10 days remaining
+      </div>
+      <div className="dash-heading2">
+        <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
+          <Plus size={17} /> Add task
         </button>
       </div>
 
-      <div className="stat-grid">
+      {/* <div className="stat-grid">
         {stats.map((s) => (
           <StatCard key={s.id} stat={s} />
         ))}
-      </div>
+      </div> */}
 
       <div className="dash-columns">
         <section className="section dash-board">
-          <div className="section-head">
-            <h2>Task Board</h2>
-            <span className="muted">Sprint 24 · Aug 11 – Aug 25</span>
-          </div>
           <KanbanBoard />
         </section>
 
-        <aside className="section dash-deadlines">
-          <div className="section-head">
-            <h2>Deadlines</h2>
-          </div>
-          <div className="deadline-list">
-            {featured.map((p) => (
-              <div className="deadline-card card" key={p.id}>
-                <div className="deadline-card-top">
-                  <span className="deadline-name">{p.name}</span>
-                  <AvatarStack names={p.members} max={3} />
-                </div>
-                <ProgressBar value={p.progress} label="Project progress" />
-                <div className="deadline-meta muted">
-                  <Clock size={14} /> {p.daysRemaining} days remaining
-                </div>
-              </div>
-            ))}
-          </div>
-        </aside>
       </div>
 
       <Modal

@@ -27,23 +27,6 @@
   gap: 10px;
 }
 
-.topbar-search {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 280px;
-}
-.topbar-search .lead-icon {
-  position: absolute;
-  left: 13px;
-  color: var(--muted-soft);
-  pointer-events: none;
-}
-.topbar-search .input {
-  height: 42px;
-  background: var(--surface);
-}
-
 .icon-btn {
   position: relative;
   width: 42px;
@@ -137,9 +120,7 @@
   border-radius: 999px;
   transition: box-shadow 0.16s ease;
 }
-.topbar-avatar:hover {
-  box-shadow: 0 0 0 3px rgba(107, 171, 144, 0.25);
-}
+
 
 @media (max-width: 900px) {
   .menu-btn {
@@ -147,9 +128,6 @@
   }
 }
 @media (max-width: 760px) {
-  .topbar-search {
-    display: none;
-  }
   .topbar-title h1 {
     font-size: 21px;
   }

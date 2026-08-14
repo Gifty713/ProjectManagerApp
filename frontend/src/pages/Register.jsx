@@ -6,11 +6,50 @@ import "../styles/auth.css"
 export default function Register() {
   const [showPw, setShowPw] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [error, setError] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    navigate("/dashboard")
+    setError("")
+    const nameParts = name.trim().split(/\s+/)
+
+    if (nameParts.length < 2) {
+      setError("Please enter both your first and last name.")
+      return
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.")
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: nameParts[0],
+          lastName: nameParts.slice(1).join(" "),
+          email,
+          password,
+        }),
+      })
+      const data = await response.json()
+
+      if (!response.ok) throw new Error(data.message || "Unable to create your account. Please try again.")
+
+      navigate("/login", { state: { message: "Account created. Sign in to continue." } })
+    } catch (err) {
+      setError(err.message || "Unable to connect to the server. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -62,7 +101,7 @@ export default function Register() {
               <label htmlFor="name">Full name</label>
               <div className="input-wrap">
                 <span className="lead-icon"><User size={17} /></span>
-                <input id="name" className="input has-lead" type="text" placeholder="Amelia Rhodes" required />
+                <input id="name" className="input has-lead" type="text" placeholder="Amelia Rhodes" value={name} onChange={(e) => setName(e.target.value)} required />
               </div>
             </div>
 
@@ -70,7 +109,7 @@ export default function Register() {
               <label htmlFor="email">Email address</label>
               <div className="input-wrap">
                 <span className="lead-icon"><Mail size={17} /></span>
-                <input id="email" className="input has-lead" type="email" placeholder="you@company.com" required />
+                <input id="email" className="input has-lead" type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
             </div>
 
@@ -83,6 +122,8 @@ export default function Register() {
                   className="input has-lead has-trail"
                   type={showPw ? "text" : "password"}
                   placeholder="Create a password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
                 <button
@@ -105,6 +146,8 @@ export default function Register() {
                   className="input has-lead has-trail"
                   type={showConfirm ? "text" : "password"}
                   placeholder="Re-enter your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                 />
                 <button
@@ -118,7 +161,10 @@ export default function Register() {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary btn-block">Create account</button>
+            {error && <p className="auth-error" role="alert">{error}</p>}
+            <button type="submit" className="btn btn-primary btn-block" disabled={isSubmitting}>
+              {isSubmitting ? "Creating account..." : "Create account"}
+            </button>
           </form>
 
           <p className="auth-foot">
