@@ -31,13 +31,16 @@ export default function CalendarPage() {
 
   const isMockMonth = current.year === 2026 && current.month === 7
 
+  const todayDate = new Date();
+  const todayDay = todayDate.getDate();
+  console.log(todayDay)
   return (
     <>
       <Topbar title="Calendar" subtitle="Project deadlines and milestones" onMenu={onMenu} />
 
       <div className="cal-toolbar">
         <div className="cal-month">
-          <h2>{MONTHS[current.month]} {current.year}</h2>
+          <h2>{MONTHS[current.month]} {current.year} </h2>
           <div className="cal-nav">
             <button className="icon-btn" onClick={() => changeMonth(-1)} aria-label="Previous month">
               <ChevronLeft size={18} />
@@ -47,20 +50,14 @@ export default function CalendarPage() {
             </button>
           </div>
         </div>
-        <div className="cal-legend">
-          {legend.map((l) => (
-            <span className="cal-legend-item" key={l.label}>
-              <span className="cal-legend-dot" style={{ background: l.accent }} /> {l.label}
-            </span>
-          ))}
-        </div>
+
       </div>
 
       <Calendar
         year={current.year}
         month={current.month}
         deadlines={isMockMonth ? calendarDeadlines : []}
-        today={isMockMonth ? 13 : undefined}
+        today={isMockMonth ? todayDay : undefined}
       />
     </>
   )

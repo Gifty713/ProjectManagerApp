@@ -18,7 +18,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <Topbar subtitle="This is workspace this" onMenu={onMenu} />
+      <Topbar subtitle="This is workspace this" title="Welcome back, Amelia" onMenu={onMenu} />
 
       <div className="dash-heading">
         <div>

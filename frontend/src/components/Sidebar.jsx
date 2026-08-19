@@ -16,8 +16,8 @@ const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/workspaces", label: "Workspaces", icon: Boxes },
+  { to: "/assignedtasks", label: "Assigned tasks", icon: CalendarDays },
   { to: "/calendar", label: "Calendar", icon: CalendarDays },
-  { to: "/calendar", label: "Assigned tasks", icon: CalendarDays },
 ]
 
 export default function Sidebar({ open, onClose }) {

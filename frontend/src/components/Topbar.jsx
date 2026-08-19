@@ -5,7 +5,7 @@ import Avatar from "./Avatar.jsx"
 import { currentUser, notifications } from "../data/mockData.js"
 import "../styles/topbar.css"
 
-export default function Topbar({ subtitle, onMenu }) {
+export default function Topbar({ title, subtitle, onMenu }) {
   const [showNotif, setShowNotif] = useState(false)
   const navigate = useNavigate()
   const unread = notifications.filter((n) => n.unread).length
@@ -17,7 +17,7 @@ export default function Topbar({ subtitle, onMenu }) {
           <Menu size={20} />
         </button>
         <div className="topbar-title">
-          <h1>Welcome back, Amelia</h1>
+          <h1>{title}</h1>
           {subtitle && <p className="muted">{subtitle}</p>}
         </div>
       </div>

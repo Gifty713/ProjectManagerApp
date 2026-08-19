@@ -26,7 +26,6 @@ export default function CommentSection() {
     <section className="comments card">
       <div className="comments-head">
         <h3>Project Discussion</h3>
-        <span className="muted">{comments.length} comments</span>
       </div>
 
       <div className="comments-list">

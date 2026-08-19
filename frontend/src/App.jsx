@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard.jsx"
 import Projects from "./pages/Projects.jsx"
 import ProjectDetails from "./pages/ProjectDetails.jsx"
 import CalendarPage from "./pages/CalendarPage.jsx"
+import Workspaces from "./pages/WorkSpaces.jsx"
+import AssignedTasks from "./pages/AssignedTasks.jsx"
 import ProtectedRoute from "./components/ProtectedRoute.jsx"
 
 export default function App() {
@@ -21,7 +23,8 @@ export default function App() {
           <Route path="/projects" element={<Projects />} />
           <Route path="/projects/:projectId" element={<ProjectDetails />} />
           <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/workspaces" element={<Dashboard />} />
+          <Route path="/assignedtasks" element={<AssignedTasks />} />
+          <Route path="/workspaces" element={<Workspaces />} />
         </Route>
       </Route>
 

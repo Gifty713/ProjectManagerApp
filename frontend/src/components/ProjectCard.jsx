@@ -2,32 +2,19 @@ import { Link } from "react-router-dom"
 import { Clock, ListChecks, Users } from "lucide-react"
 import ProgressBar from "./ProgressBar.jsx"
 import { AvatarStack } from "./Avatar.jsx"
+import { useState } from "react"
 
-const statusClass = {
-  Active: "badge-active",
-  Planning: "badge-planning",
-  "On Hold": "badge-hold",
-  Completed: "badge-done",
-}
 
-export default function ProjectCard({ project }) {
+export default function ProjectCard({ project, who, currentWorkspace, setCurrentWorkspace}) {
+  const isCurrentWorkspace = currentWorkspace === project.id;  
+  const wsClick =()=>{
+    setCurrentWorkspace(project.id);
+  }
   return (
+    <div>
+    {who ==="projects"?
     <Link to={`/projects/${project.id}`} className="project-card card">
-      <div className="project-card-head">
-        <span className={`badge ${statusClass[project.status] || "badge-planning"}`}>
-          <span className="badge-dot" /> {project.status}
-        </span>
-        {project.hasNotification && (
-          <span className="notif-dot" aria-label="New activity" title="New activity" />
-        )}
-      </div>
-
       <h3 className="project-name">{project.name}</h3>
-      <p className="project-desc">{project.description}</p>
-
-      <div className="project-progress">
-        <ProgressBar value={project.progress} showPct label="Progress" />
-      </div>
 
       <div className="project-meta">
         <span className="project-meta-item">
@@ -46,6 +33,21 @@ export default function ProjectCard({ project }) {
         <AvatarStack names={project.members} max={4} />
         <span className="project-view">View project →</span>
       </div>
-    </Link>
+    </Link> :
+    <div className="project-card card" onClick={wsClick}>
+      <h3 className="project-name">{project.name}</h3>
+
+      <div className="project-card-foot">
+        <span className="workspace-view">
+          {isCurrentWorkspace
+            ? "Current workspace"
+            : "Switch to workspace"
+          }
+        </span>
+      </div>      
+    </div>
+  }
+    </div>
+
   )
 }
