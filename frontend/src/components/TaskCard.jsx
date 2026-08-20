@@ -4,6 +4,9 @@ import Avatar from "./Avatar.jsx"
 const prioLabel = { high: "High", medium: "Medium", low: "Low" }
 
 export default function TaskCard({ task, category }) {
+  const title = task.task_name || task.title
+  const deadline = task.due_date ? new Date(task.due_date).toLocaleDateString() : task.deadline
+  const assignee = task.assigned_to || task.assignee
   return (
     <article className="task-card">
       {/* <div className="task-card-head">
@@ -12,8 +15,7 @@ export default function TaskCard({ task, category }) {
         </span>
         <Avatar name={task.assignee} size="sm" />
       </div> */}
-      <h4 className="task-title">{task.title}</h4>
-      <p className="task-desc">{task.description}</p>
+      <h4 className="task-title">{title}</h4>
       <div className="task-card-foot">
         {category === "To Do" ? (<button className="btn btn-primary"> Start</button>) 
         : category === "In Progress" 
@@ -23,9 +25,9 @@ export default function TaskCard({ task, category }) {
         : ("")
         }
         <span className="task-deadline muted">
-        <CalendarClock size={14} /> {task.deadline}
+        <CalendarClock size={14} /> {deadline}
         </span>
-        <span className="task-assignee muted">{task.assignee}</span>
+        <span className="task-assignee muted">{assignee}</span>
       </div>
      
     </article>

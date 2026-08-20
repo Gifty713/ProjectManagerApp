@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useOutletContext } from "react-router-dom"
 import { Plus, Clock } from "lucide-react"
 import Topbar from "../components/Topbar.jsx"
@@ -7,31 +7,52 @@ import KanbanBoard from "../components/KanbanBoard.jsx"
 import ProgressBar from "../components/ProgressBar.jsx"
 import Modal from "../components/Modal.jsx"
 import { AvatarStack } from "../components/Avatar.jsx"
-import { stats, projects } from "../data/mockData.js"
+import { columns } from "../data/mockData.js"
+import { useWorkspaces } from "../workspaces/WorkspaceContext.jsx"
 import "../styles/dashboard.css"
 
-const featured = projects.filter((p) => p.status === "Active").slice(0, 3)
-
 export default function Dashboard() {
-  const { onMenu } = useOutletContext()
-  const [modalOpen, setModalOpen] = useState(false)
+  const { onMenu } = useOutletContext();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [project, setProject] = useState(null)
+  const [tasks, setTasks] = useState({ todo: [], progress: [], done: [], approved: [] })
+  const { selectedWorkspace } = useWorkspaces()
+
+  useEffect(() => {
+    if (!selectedWorkspace) return
+    const loadDashboard = async () => {
+      const projectResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/project/getprojects/${selectedWorkspace.workspace_id}`, { credentials: "include" })
+      const projectData = await projectResponse.json()
+      if (!projectResponse.ok || !projectData.data?.[0]) return
+      const currentProject = projectData.data[0]
+      setProject(currentProject)
+      const statuses = [["todo", "to do"], ["progress", "In progress"], ["done", "Done"], ["approved", "Approved"]]
+      const results = await Promise.all(statuses.map(async ([key, status]) => {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/tasks/gettasks/${currentProject.project_id}/${encodeURIComponent(status)}`, { credentials: "include" })
+        const data = await response.json()
+        return [key, data.result || []]
+      }))
+      setTasks(Object.fromEntries(results))
+    }
+    loadDashboard().catch(() => setTasks({ todo: [], progress: [], done: [], approved: [] }))
+  }, [selectedWorkspace])
 
   return (
     <>
-      <Topbar subtitle="This is workspace this" title="Welcome back, Amelia" onMenu={onMenu} />
+      <Topbar subtitle={selectedWorkspace?.workspace_name || "No workspace selected"} title="Dashboard" onMenu={onMenu} />
 
       <div className="dash-heading">
         <div>
-          <h2>Project</h2>
+          <h2>{project?.project_name || "Project"}</h2>
         </div>
         
         <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
           Switch Project
         </button>
       </div>
-      <ProgressBar value="40" label="Project Deadline" />
+      <ProgressBar value="0" label="Project Deadline" />
       <div className="deadline-meta muted">
-        <Clock size={14} /> 10 days remaining
+        <Clock size={14} /> {project ? "Task deadlines are shown below" : "Select a workspace to view its projects"}
       </div>
       <div className="dash-heading2">
         <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
@@ -47,7 +68,7 @@ export default function Dashboard() {
 
       <div className="dash-columns">
         <section className="section dash-board">
-          <KanbanBoard />
+          <KanbanBoard data={tasks} columns={columns} />
         </section>
 
       </div>

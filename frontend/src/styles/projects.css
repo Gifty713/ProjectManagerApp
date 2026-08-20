@@ -81,6 +81,20 @@
   border-bottom: 1px solid var(--line);
   margin-bottom: 14px;
 }
+.task-meta {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 14px;
+}
+.task-circle{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .project-meta-item {
   display: inline-flex;
   align-items: center;
@@ -103,7 +117,6 @@
 .project-card:hover .project-view {
   color: var(--plum);
 }
-
 /* workspace particular styling */
 .workspace-view{
   font-size: 13px;

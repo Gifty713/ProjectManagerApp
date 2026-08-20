@@ -18,7 +18,7 @@ dotenv.config({
 const app = express();
 app.use(express.json());
 app.use(cors(
-    {origin:"http://localhost:5173"}
+    {origin:"http://localhost:5173", credentials:true}
 ));
 const httpServer = createServer(app);
 const io = new Server(httpServer, {cors:{origin:"*"}});
@@ -45,7 +45,7 @@ const resend = new Resend(process.env.RESEND_KEY);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/workspace", workspaceRoute);
 app.use("/api/v1/project", projectRoute);
-// app.use("/api/v1/members", memberRoute);
+app.use("/api/v1/members", memberRoute);
 app.use("/api/v1/tasks", taskRoute);
 app.use("/api/v1/comments", commentRoute);
 

@@ -7,6 +7,7 @@ import {
   Settings,
   ChevronRight,
   X,
+  ListTodo 
 } from "lucide-react"
 import Avatar from "./Avatar.jsx"
 import { currentUser } from "../data/mockData.js"
@@ -16,7 +17,7 @@ const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/workspaces", label: "Workspaces", icon: Boxes },
-  { to: "/assignedtasks", label: "Assigned tasks", icon: CalendarDays },
+  { to: "/assignedtasks", label: "Assigned tasks", icon: ListTodo },
   { to: "/calendar", label: "Calendar", icon: CalendarDays },
 ]
 

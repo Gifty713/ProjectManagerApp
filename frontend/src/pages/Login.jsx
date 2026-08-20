@@ -20,16 +20,17 @@ export default function Login() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch(`http://localhost:4000/api/v1/auth/login`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       })
       const data = await response.json()
 
       if (!response.ok) throw new Error(data.message || "Unable to sign in. Please try again.")
 
-      signIn(data.accessToken)
+      signIn()
       navigate(location.state?.from?.pathname || "/dashboard", { replace: true })
     } catch (err) {
       setError(err.message || "Unable to connect to the server. Please try again.")

@@ -1,26 +1,44 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useOutletContext } from "react-router-dom"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Topbar from "../components/Topbar.jsx"
 import Calendar from "../components/Calendar.jsx"
-import { calendarDeadlines } from "../data/mockData.js"
+import { useWorkspaces } from "../workspaces/WorkspaceContext.jsx"
 
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ]
 
-const legend = [
-  { label: "Website Redesign", accent: "#55917F" },
-  { label: "Auth System", accent: "#38023B" },
-  { label: "Design System", accent: "#6BAB90" },
-  { label: "Mobile App v2", accent: "#2E382E" },
-]
-
 export default function CalendarPage() {
   const { onMenu } = useOutletContext()
-  // Anchored on the mock data month.
-  const [current, setCurrent] = useState({ year: 2026, month: 7 }) // August 2026
+  const todayDate = new Date()
+  const [current, setCurrent] = useState({ year: todayDate.getFullYear(), month: todayDate.getMonth() })
+  const [deadlines, setDeadlines] = useState([])
+  const { selectedWorkspace } = useWorkspaces()
+
+  useEffect(() => {
+    if (!selectedWorkspace) return setDeadlines([])
+    const loadDeadlines = async () => {
+      const projectResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/project/getprojects/${selectedWorkspace.workspace_id}`, { credentials: "include" })
+      const projectData = await projectResponse.json()
+      const project = projectData.data?.[0]
+      if (!project) return setDeadlines([])
+      const statuses = ["to do", "In progress", "Done", "Approved"]
+      const taskLists = await Promise.all(statuses.map(async (status) => {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/tasks/gettasks/${project.project_id}/${encodeURIComponent(status)}`, { credentials: "include" })
+        const data = await response.json()
+        return data.result || []
+      }))
+      setDeadlines(taskLists.flat().filter((task) => task.due_date).map((task) => ({
+        day: new Date(task.due_date).getDate(),
+        due_date: task.due_date,
+        label: task.task_name,
+        accent: "#55917F",
+      })))
+    }
+    loadDeadlines().catch(() => setDeadlines([]))
+  }, [selectedWorkspace])
 
   const changeMonth = (delta) => {
     setCurrent((c) => {
@@ -29,14 +47,9 @@ export default function CalendarPage() {
     })
   }
 
-  const isMockMonth = current.year === 2026 && current.month === 7
-
-  const todayDate = new Date();
-  const todayDay = todayDate.getDate();
-  console.log(todayDay)
   return (
     <>
-      <Topbar title="Calendar" subtitle="Project deadlines and milestones" onMenu={onMenu} />
+      <Topbar title="Calendar" subtitle="Deadlines for the selected workspace project" onMenu={onMenu} />
 
       <div className="cal-toolbar">
         <div className="cal-month">
@@ -56,8 +69,11 @@ export default function CalendarPage() {
       <Calendar
         year={current.year}
         month={current.month}
-        deadlines={isMockMonth ? calendarDeadlines : []}
-        today={isMockMonth ? todayDay : undefined}
+        deadlines={deadlines.filter((deadline) => {
+          const date = new Date(deadline.due_date)
+          return !Number.isNaN(date) && date.getFullYear() === current.year && date.getMonth() === current.month
+        })}
+        today={todayDate.getFullYear() === current.year && todayDate.getMonth() === current.month ? todayDate.getDate() : undefined}
       />
     </>
   )

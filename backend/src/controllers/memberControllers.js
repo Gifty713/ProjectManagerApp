@@ -1,5 +1,5 @@
 import pool from "../config/database.js";
-// import redisClient from "../config/redisDatabase.js";
+import redisClient from "../config/redisDatabase.js";
 import { nanoid } from "nanoid";
 
 const createInviteCodes =async(req, res)=>{

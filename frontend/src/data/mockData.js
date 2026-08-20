@@ -1,7 +1,7 @@
 // Realistic mock data for the project management UI.
 
 export const currentUser = {
-  name: "Amelia Rhodes",
+  name: "Ketlyn Kennedy",
   role: "Product Lead",
   email: "amelia@nexus.io",
   avatarColor: "#38023B",
