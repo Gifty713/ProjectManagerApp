@@ -2,7 +2,7 @@ import {createClient} from "redis";
 
 const redisClient = createClient({
     username: "default",
-    password:"AUe73lYI6pddPJuSTrJcihH6EPQ3DavU",
+    password:process.env.REDISPWD,
     socket: {
         host: 'monumental-slow-spirited-37578.db.redis.io',
         port: 10105,

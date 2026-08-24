@@ -4,7 +4,7 @@ const pool = new Pool({
     host:"localhost",
     user:"postgres",
     port:5432,
-    password:"2233",
+    password:process.env.POSTGRESQLPWD,
     database:"project_management_app"
 })
 
