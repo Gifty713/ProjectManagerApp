@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom"
 import { Plus } from "lucide-react"
 import Topbar from "../components/Topbar.jsx"
 import AssignedTaskCard from "../components/AssignedTaskCard.jsx"
-import { useWorkspaces } from "../workspaces/WorkspaceContext.jsx"
+import { useWorkspaces } from "../components/WorkspaceContext.jsx"
 import "../styles/projects.css"
 
 export default function AssignedTasks (){

@@ -14,6 +14,7 @@ export default function ProjectDetails() {
   const { projectId } = useParams()
   const [project, setProject] = useState(null)
   const [tasks, setTasks] = useState({ todo: [], progress: [], done: [], approved: [] })
+  const [members, setMembers] = useState([])
 
   useEffect(() => {
     const loadProject = async () => {
@@ -21,6 +22,9 @@ export default function ProjectDetails() {
       const data = await response.json()
       if (!response.ok) return
       setProject(data.result)
+      const memberResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/members/getmembers/${projectId}`, { credentials: "include" })
+      const memberData = await memberResponse.json()
+      if (memberResponse.ok) setMembers(memberData.user_ids || [])
       const statuses = [["todo", "to do"], ["progress", "In progress"], ["done", "Done"], ["approved", "Approved"]]
       const results = await Promise.all(statuses.map(async ([key, status]) => {
         const taskResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/tasks/gettasks/${projectId}/${encodeURIComponent(status)}`, { credentials: "include" })
@@ -52,12 +56,21 @@ export default function ProjectDetails() {
             </span>
             <span className="pd-fact">{Object.values(tasks).flat().length} tasks</span>
           </div>
+          <div className="pd-member-roles">
+            {members.map((member) => {
+              const name = `${member.first_name} ${member.last_name}`.trim() || member.email
+              return <span className="pd-member-role" key={member.user_id}>{name} · {member.role}</span>
+            })}
+          </div>
         </div>
         <div className="pd-progress-box">
           <div className="pd-team">
             <span className="pd-team-label muted">Team</span>
             <div className="pd-team-avatars">
-              <span className="muted">Member details are not provided by this endpoint.</span>
+              {members.map((member) => {
+                const name = `${member.first_name} ${member.last_name}`.trim() || member.email
+                return <Avatar key={member.user_id} name={name} size="sm" />
+              })}
             </div>
           </div>
         </div>

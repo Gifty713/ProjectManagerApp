@@ -4,7 +4,7 @@ import { Plus } from "lucide-react"
 import Topbar from "../components/Topbar.jsx"
 import Modal from "../components/Modal.jsx"
 import ProjectCard from "../components/ProjectCard.jsx"
-import { useWorkspaces } from "../workspaces/WorkspaceContext.jsx"
+import { useWorkspaces } from "../components/WorkspaceContext.jsx"
 import "../styles/projects.css"
 
 

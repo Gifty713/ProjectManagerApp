@@ -10,7 +10,7 @@ import {
   ListTodo 
 } from "lucide-react"
 import Avatar from "./Avatar.jsx"
-import { currentUser } from "../data/mockData.js"
+import { useAuth } from "../auth/AuthContext.jsx"
 import "../styles/sidebar.css"
 
 const nav = [
@@ -22,6 +22,9 @@ const nav = [
 ]
 
 export default function Sidebar({ open, onClose }) {
+  const { user } = useAuth()
+  const name = `${user?.first_name || ""} ${user?.last_name || ""}`.trim() || user?.email || "Account"
+
   return (
     <>
       <div className={`sidebar-scrim ${open ? "show" : ""}`} onClick={onClose} aria-hidden="true" />
@@ -53,10 +56,10 @@ export default function Sidebar({ open, onClose }) {
 
         <div className="sidebar-foot">
           <div className="user-chip">
-            <Avatar name={currentUser.name} size="md" />
+            <Avatar name={name} size="md" />
             <span className="user-meta">
-              <span className="user-name">{currentUser.name}</span>
-              <span className="user-role">{currentUser.role}</span>
+              <span className="user-name">{name}</span>
+              <span className="user-role">Signed in</span>
             </span>
           </div>
         </div>

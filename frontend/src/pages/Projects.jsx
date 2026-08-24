@@ -1,35 +1,37 @@
 import { useEffect, useState } from "react"
-import { useOutletContext } from "react-router-dom"
+import { useNavigate, useOutletContext } from "react-router-dom"
 import { Plus } from "lucide-react"
 import Topbar from "../components/Topbar.jsx"
 import Modal from "../components/Modal.jsx"
 import ProjectCard from "../components/ProjectCard.jsx"
-import { useWorkspaces } from "../workspaces/WorkspaceContext.jsx"
+import { useWorkspaces } from "../components/WorkspaceContext.jsx"
+import { useProjects } from "../components/ProjectContext.jsx"
 import "../styles/projects.css"
 
 
 export default function Projects() {
   const { onMenu } = useOutletContext()
   const [modalOpen, setModalOpen] = useState(false);
-  const [projects, setProjects] = useState([])
   const [projectName, setProjectName] = useState("")
   const [error, setError] = useState("")
-  const { workspaces, selectedWorkspace, setSelectedWorkspace } = useWorkspaces()
+  const [currentRole, setCurrentRole] = useState(null)
+  const { selectedWorkspace } = useWorkspaces()
+  const { projects, setProjects, selectedProject, setSelectedProject } = useProjects()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    if (!selectedWorkspace) return setProjects([])
-    const loadProjects = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/project/getprojects/${selectedWorkspace.workspace_id}`, { credentials: "include" })
-        const data = await response.json()
-        if (!response.ok) throw new Error(data.message || "Unable to load projects.")
-        setProjects(data.data || [])
-      } catch (err) {
-        setError(err.message)
-      }
+    if (!selectedProject) {
+      setCurrentRole(null)
+      return
     }
-    loadProjects()
-  }, [selectedWorkspace])
+    fetch(`${import.meta.env.VITE_API_URL}/api/v1/members/getmembers/${selectedProject.project_id}`, { credentials: "include" })
+      .then(async (response) => {
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.message)
+        setCurrentRole(data.current_role || null)
+      })
+      .catch(() => setCurrentRole(null))
+  }, [selectedProject])
 
   const createProject = async (e) => {
     e.preventDefault()
@@ -45,6 +47,7 @@ export default function Projects() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.message || "Unable to create project.")
       setProjects((current) => [...current, data.result])
+      setSelectedProject(data.result)
       setProjectName("")
       setModalOpen(false)
     } catch (err) {
@@ -60,11 +63,10 @@ export default function Projects() {
         <div className="filter-chips" role="tablist" aria-label="Filter projects">  
         </div>
         <div className="projects-toolbar">
-          <select className="input" value={selectedWorkspace?.workspace_id || ""} onChange={(e) => setSelectedWorkspace(workspaces.find((workspace) => String(workspace.workspace_id) === e.target.value) || null)}>
-            <option value="">Select workspace</option>
-            {workspaces.map((workspace) => <option key={workspace.workspace_id} value={workspace.workspace_id}>{workspace.workspace_name}</option>)}
-          </select>
-          <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
+          <button className="btn btn-primary switch" onClick={() => navigate("/workspaces")}>
+            Switch Workspace
+          </button>
+          <button className="btn btn-primary" onClick={() => setModalOpen(true)} disabled={currentRole === "Team Manager"}>
             <Plus size={17} /> New Project
           </button>
         </div>
@@ -73,7 +75,7 @@ export default function Projects() {
 
       <div className="projects-grid">
         {projects.map((p) => (
-          <ProjectCard key={p.id} project={p} who={"projects"} />
+          <ProjectCard key={p.project_id} project={p} who={"projects"} currentProject={selectedProject?.project_id} setCurrentProject={(projectId) => setSelectedProject(projects.find((project) => project.project_id === projectId) || null)} />
         ))}
       </div>
       {/* Modal */}
@@ -97,7 +99,7 @@ export default function Projects() {
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
-              Create Workspace
+              Create Project
             </button>
           </div>
         </form>

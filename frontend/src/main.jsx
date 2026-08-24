@@ -3,7 +3,8 @@ import ReactDOM from "react-dom/client"
 import { BrowserRouter } from "react-router-dom"
 import App from "./App.jsx"
 import { AuthProvider } from "./auth/AuthContext.jsx"
-import { WorkspaceProvider } from "./workspaces/WorkspaceContext.jsx"
+import { WorkspaceProvider } from "./components/WorkspaceContext.jsx"
+import { ProjectProvider } from "./components/ProjectContext.jsx"
 import "./styles/global.css"
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -11,7 +12,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <AuthProvider>
         <WorkspaceProvider>
-          <App />
+          <ProjectProvider>
+            <App />
+          </ProjectProvider>
         </WorkspaceProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -109,12 +109,16 @@
   justify-content: space-between;
 }
 .project-view {
+  padding: 0;
+  border: 0;
+  background: transparent;
   font-size: 13px;
   font-weight: 600;
   color: var(--green-deep);
+  cursor: pointer;
   transition: color 0.15s ease;
 }
-.project-card:hover .project-view {
+.project-view:hover {
   color: var(--plum);
 }
 /* workspace particular styling */

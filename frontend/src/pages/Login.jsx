@@ -30,7 +30,7 @@ export default function Login() {
 
       if (!response.ok) throw new Error(data.message || "Unable to sign in. Please try again.")
 
-      signIn()
+      await signIn()
       navigate(location.state?.from?.pathname || "/dashboard", { replace: true })
     } catch (err) {
       setError(err.message || "Unable to connect to the server. Please try again.")

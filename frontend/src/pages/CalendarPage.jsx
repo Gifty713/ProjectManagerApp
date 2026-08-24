@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Topbar from "../components/Topbar.jsx"
 import Calendar from "../components/Calendar.jsx"
-import { useWorkspaces } from "../workspaces/WorkspaceContext.jsx"
+import { useWorkspaces } from "../components/WorkspaceContext.jsx"
 
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",

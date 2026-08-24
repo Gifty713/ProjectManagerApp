@@ -1,9 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { useAuth } from "../auth/AuthContext.jsx"
 
 const WorkspaceContext = createContext(null)
 const apiUrl = import.meta.env.VITE_API_URL
 
 export function WorkspaceProvider({ children }) {
+  const { isAuthenticated } = useAuth()
   const [workspaces, setWorkspaces] = useState([])
   const [selectedWorkspace, setSelectedWorkspace] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -15,8 +17,10 @@ export function WorkspaceProvider({ children }) {
       const data = await response.json()
       if (!response.ok) throw new Error(data.message || "Unable to load workspaces.")
       const items = data.data || []
+      const savedIndex = Number.parseInt(localStorage.getItem("selectedWorkspaceIndex"), 10)
+      const savedWorkspace = Number.isInteger(savedIndex) ? items[savedIndex] : null
       setWorkspaces(items)
-      setSelectedWorkspace((current) => current || items[0] || null)
+      setSelectedWorkspace((current) => items.find((workspace) => workspace.workspace_id === current?.workspace_id) || savedWorkspace || items[0] || null)
     } catch {
       setWorkspaces([])
       setSelectedWorkspace(null)
@@ -25,7 +29,20 @@ export function WorkspaceProvider({ children }) {
     }
   }
 
-  useEffect(() => { loadWorkspaces() }, [])
+  useEffect(() => {
+    if (isAuthenticated === true) {
+      loadWorkspaces()
+    } else if (isAuthenticated === false) {
+      setWorkspaces([])
+      setSelectedWorkspace(null)
+      setLoading(false)
+    }
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    const index = workspaces.findIndex((workspace) => workspace.workspace_id === selectedWorkspace?.workspace_id)
+    if (index >= 0) localStorage.setItem("selectedWorkspaceIndex", String(index))
+  }, [workspaces, selectedWorkspace])
 
   const value = useMemo(() => ({
     workspaces,

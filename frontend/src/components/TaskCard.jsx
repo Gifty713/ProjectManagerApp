@@ -6,7 +6,7 @@ const prioLabel = { high: "High", medium: "Medium", low: "Low" }
 export default function TaskCard({ task, category }) {
   const title = task.task_name || task.title
   const deadline = task.due_date ? new Date(task.due_date).toLocaleDateString() : task.deadline
-  const assignee = task.assigned_to || task.assignee
+  const assignee = task.assignee_name || task.assignee || task.assigned_to
   return (
     <article className="task-card">
       {/* <div className="task-card-head">
